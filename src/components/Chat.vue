@@ -3,10 +3,19 @@
     <div class="card mt-3">
       <div class="card-body">
         <div class="card-title">
-          <h3>Chat Group</h3>
+          <h3>Spool Status</h3>
           <hr />
         </div>
         <div class="card-body">
+          <div class="machines_json">
+            {{ machines }}
+          </div>
+          <div class="machines" v-for="(machine, ind) in machines" :key="ind">
+            <div class="machine">
+              <div class="badge">{{ ind }}</div>
+              <div class="badge">{{ machines[ind].status }}</div>
+            </div>
+          </div>
           <div class="messages" v-for="(msg, index) in messages" :key="index">
             <p>
               <span class="font-weight-bold">{{ msg.user }}:</span>
@@ -40,7 +49,8 @@ export default {
       user: "",
       message: "",
       messages: [],
-      socket: io("localhost:4001")
+      socket: io("localhost:4001"),
+      machines: {}
     };
   },
   methods: {
@@ -58,6 +68,10 @@ export default {
       this.messages = [...this.messages, data];
       // you can also do this.messages.push(data)
     });
+    this.socket.on("machines", data => {
+      this.machines = data;
+      window.machines = data;
+    })
   }
 };
 </script>
