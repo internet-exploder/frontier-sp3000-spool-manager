@@ -118,8 +118,8 @@ var get_status = function(key) {
               var order_id = parseInt(stdout.split("\n")[0]);
               console.log("order_id: "+order_id);
               orders[key][order_id] = { outspool_folder: dirpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
-              console.log("orders: "+orders[key].length+" paths: "+paths.length);
-              if (orders[key].length == paths.length) {
+              console.log("orders: "+Object.keys(orders[key]).length+" paths: "+paths.length);
+              if (Object.keys(orders[key]).length == paths.length) {
                 machines[key]["outspool_last"] = orders[key];
               }
             });
