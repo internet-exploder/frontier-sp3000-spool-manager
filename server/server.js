@@ -162,7 +162,7 @@ var resolve_order = function(key, dirpath, paths) {
     var order_id = parseInt(stdout.split("\n")[0]);
     orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: (stdout.split("\n").filter(n => n).length > 1) })
     if (orders[key].length == paths.length) {
-      machines[key]["outspool_last"] = orders[key];
+      machines[key]["outspool_last"] = orders[key].sort((a, b) => (a.order_id > b.order_id) ? 1 : -1);
     }
   });
 }
