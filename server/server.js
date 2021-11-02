@@ -177,7 +177,7 @@ function getSortedHash(inputHash){
 
   var keys = Object.keys(inputHash);
   keys.sort(function(a, b) {
-    return inputHash[a] - inputHash[b]
+    return parseInt(a) - parseInt(b)
   }).reverse().forEach(function(k) {
     resultHash[k] = inputHash[k];
   });
