@@ -83,7 +83,7 @@ setInterval(function() {
   Object.keys(machines).forEach(function(key) {
     get_status(key);
   })
-  io.emit("machines", machines)
+  //io.emit("machines", machines)
 }, 2000)
 
 // Update symlinks folder
@@ -191,9 +191,7 @@ var get_status = function(key) {
           machines[key]["photos_mounted"] = false
         });
       }
-    });
-
-    
+    });    
   });
 }
 
@@ -224,6 +222,7 @@ var resolve_order = function(key, dirpath, paths) {
         orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path, order_uuid: order_uuid, name: symlink_name, loading: false })
         if (orders[key].length == paths.length) {
           machines[key]["outspool_last"] = orders[key].sort((a, b) => (a.order_id < b.order_id) ? 1 : -1);
+          io.emit("machines", machines)
         }
       });
     });
