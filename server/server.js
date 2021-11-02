@@ -100,11 +100,11 @@ setInterval(function() {
 
 var set_order_loading_by_path = function(hires_path, loading) {
   var found_order = null;
-  Object.keys(orders).forEach(function(key) {
-    for (var i = 0; i < orders[key].length; i++) {
-      if (orders[key][i]["hires_path"] == hires_path) {
-        orders[key][i]["loading"] = loading;
-        found_order = orders[key][i];
+  Object.keys(machines).forEach(function(key) {
+    for (var i = 0; i < machines[key]["outspool_last"].length; i++) {
+      if (machines[key]["outspool_last"][i]["hires_path"] == hires_path) {
+        machines[key]["outspool_last"][i]["loading"] = loading;
+        found_order = machines[key]["outspool_last"][i];
       }
     }
   })
