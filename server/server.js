@@ -104,6 +104,7 @@ var get_status = function(key) {
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           var orders = {}
           for (var dirpath of stdout.split("\n")) {
+            console.log('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "');
             exec('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
               if (error) { console.log(`error: ${error.message}`); return; }
               if (stderr) { console.log(`stderr: ${stderr}`); return; }
