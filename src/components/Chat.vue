@@ -75,7 +75,7 @@ export default {
     virsh_toggle(key) {
       Console.log(key)
       if (this.machines[key]["status"] == "online") {
-        this.socket.emit("virsh", { cmd: "stop", name: key });
+        this.socket.emit("virsh", { cmd: "shutdown", name: key });
       } else {
         this.socket.emit("virsh", { cmd: "start", name: key });
       }
