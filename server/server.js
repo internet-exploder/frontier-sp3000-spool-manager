@@ -103,13 +103,17 @@ var get_status = function(key) {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           var orders = {}
-          for (var dirpath of stdout.split("\n").filter(n => n)) {
-            console.log('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "');
+          var paths = stdout.split("\n").filter(n => n);
+          for (var dirpath of paths) {
+            //console.log('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "');
             exec('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
               if (error) { console.log(`error: ${error.message}`); return; }
               if (stderr) { console.log(`stderr: ${stderr}`); return; }
               var order_id = parseInt(stdout.split("\n")[0]);
               orders[order_id] = { outspool_folder: dirpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
+              if (orders.length == paths.length) {
+                machines[key]["outspool_last"] = orders;
+              }
             });
           }
           //machines[key]["outspool_last"] = stdout.split("\n");
