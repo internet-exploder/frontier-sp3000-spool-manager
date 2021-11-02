@@ -23,6 +23,9 @@
               <div class="badge btn" v-on:click="virsh_toggle(ind)" v-bind:class="{ 'badge-success': machines[ind].status == 'offline', 'badge-danger': machines[ind].status == 'online' }">
                 {{ machines[ind].status == "online" ? "Stop" : "Start" }}
               </div>
+              <div class="card" v-for="(order, ind) in machines[ind].outspool_last" :key="ind">
+                <div class="well">{{ order }}</div>
+              </div>
             </div>
           </div>
           <div class="messages" v-for="(msg, index) in messages" :key="index">

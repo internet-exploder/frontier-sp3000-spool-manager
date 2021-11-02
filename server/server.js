@@ -21,13 +21,15 @@ machines = {
     status: "offline",
     ip: "192.168.3.5",
     outspool_mounted: false,
-    photos_mounted: false
+    photos_mounted: false,
+    outspool_last: []
   },
   "xp2": {
     status: "offline",
     ip: "192.168.4.5",
     outspool_mounted: false,
-    photos_mounted: false
+    photos_mounted: false,
+    outspool_last: []
   }
 }
 
@@ -97,9 +99,18 @@ var get_status = function(key) {
         });
       }
       if (parseInt(stdout) > 0) {
-        exec('ls /mnt/'+key+'_outspool | egrep -v "Device|ORDERINF" | tail', (error, stdout, stderr) => {
+        exec('ls /mnt/'+key+'_outspool | egrep -v "Device|ORDERINF|OrderPacks" | tail', (error, stdout, stderr) => {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
+          var orders = {}
+          for (var dirpath of stdout.split("\n")) {
+            exec('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
+              if (error) { console.log(`error: ${error.message}`); return; }
+              if (stderr) { console.log(`stderr: ${stderr}`); return; }
+              var order_id = parseInt(stdout.split("\n")[0]);
+              orders[order_id] = { outspool_folder: dirpath, complete: (stdout.split("\n").length > 1) }
+            });
+          }
           machines[key]["outspool_last"] = stdout.split("\n");
         });
       }
