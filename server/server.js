@@ -63,6 +63,13 @@ io.on('connection', socket => {
   });
 
   socket.on("symlink", what_do => {
+    if (Object.keys(symlinks).indexOf(what_do["hires_path"]) > -1) {
+      exec('rm "/root/symlinks/'+symlinks[what_do["hires_path"]]+'"', (error, stdout, stderr) => {
+        if (error) { console.log(`error: ${error.message}`); return; }
+        if (stderr) { console.log(`stderr: ${stderr}`); return; }
+        console.log(stdout);
+      });
+    }
     exec('ln -s '+what_do["hires_path"]+' "/root/symlinks/'+what_do["name"]+'"', (error, stdout, stderr) => {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }

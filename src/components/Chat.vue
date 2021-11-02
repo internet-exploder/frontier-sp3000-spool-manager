@@ -67,9 +67,12 @@ export default {
   },
   methods: {
     editName(order) {
-      var new_name = prompt("Enter new name for "+order.order_uuid+":", strftime("%d.%m.%y"));
-      Console.log(new_name);
-      Console.log(order.hires_path);
+      var input;
+      input = prompt("Enter new name for "+order.order_uuid+":", strftime("%d.%m.%y"));
+      if (input === null) {
+        return; //break out of the function early
+      }
+      var new_name = input;
       this.socket.emit("symlink", { hires_path: order.hires_path, name: new_name });
     },
     virsh_toggle(key) {
