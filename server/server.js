@@ -110,7 +110,7 @@ var get_status = function(key) {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           orders[key] = {}
-          var paths = stdout.split("\n").filter(n => n);
+          var paths = stdout.split("\n").filter(n => n).reverse();
           for (var dirpath of paths) {
             resolve_order(key, dirpath, paths)
           }
@@ -161,7 +161,7 @@ var resolve_order = function(key, dirpath, paths) {
     var order_id = parseInt(stdout.split("\n")[0]);
     orders[key][order_id] = { outspool_folder: kekpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
     if (Object.keys(orders[key]).length == paths.length) {
-      machines[key]["outspool_last"] = orders[key].reverse();
+      machines[key]["outspool_last"] = orders[key];
     }
   });
 }
