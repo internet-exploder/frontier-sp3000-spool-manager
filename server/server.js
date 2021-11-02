@@ -60,6 +60,7 @@ io.on('connection', socket => {
 
   socket.on("symlink", what_do => {
     set_order_loading_by_path(what_do["hires_path"], true);
+    io.emit("machines", machines)
     if (Object.keys(symlinks).indexOf(what_do["hires_path"]) > -1) {
       exec('rm "/root/symlinks/'+symlinks[what_do["hires_path"]]+'"', (error, stdout, stderr) => {
         if (error) { console.log(`error: ${error.message}`); return; }
