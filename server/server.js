@@ -154,18 +154,14 @@ var get_status = function(key) {
 
 var resolve_order = function(key, dirpath, paths) {
   var kekpath = dirpath;
-  //console.log('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "');
   exec('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
-    console.log("immediate DIRPATH: "+kekpath);
     var dirpath = dirpath;
     if (error) { console.log(`error: ${error.message}`); return; }
     if (stderr) { console.log(`stderr: ${stderr}`); return; }
     var order_id = parseInt(stdout.split("\n")[0]);
-    console.log("order_id: "+order_id);
     orders[key][order_id] = { outspool_folder: kekpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
-    console.log("orders: "+Object.keys(orders[key]).length+" paths: "+paths.length);
     if (Object.keys(orders[key]).length == paths.length) {
-      machines[key]["outspool_last"] = orders[key];
+      machines[key]["outspool_last"] = orders[key].reverse();
     }
   });
 }
