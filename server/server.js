@@ -170,8 +170,9 @@ var resolve_order = function(key, dirpath, paths) {
       console.log(hires_path);
       var order_path = hires_path.split("/");
       order_path.pop();
+      order_path.pop();
       order_path = order_path.join("/");
-      exec("find "+order_path+" | grep -i jpg; exit 0", (error, stdout, stderr) => {
+      exec("find "+order_path+"/Orders | grep -i jpg; exit 0", (error, stdout, stderr) => {
         if (error) { console.log(`error: ${error.message}`); return; }
         if (stderr) { console.log(`stderr: ${stderr}`); return; }
         var order_uuid = stdout.split(".")[0].split("/").reverse()[0];
