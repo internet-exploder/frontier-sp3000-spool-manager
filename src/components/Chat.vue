@@ -41,8 +41,9 @@
                     <td>{{ order.hires_path }}</td>
                     <td>{{ order.name }}</td>
                     <td>
-                      <div class="btn btn-success" v-on:click="editName(order)">✏️</div>
-                      <div class="btn btn-secondary" v-if="order.loading == true">🕘</div>
+                      <div class="btn btn-success" v-on:click="editName(order)" v-if="!order.loading">✏️</div>
+                      <div class="btn btn-secondary" v-if="order.loading">🕘</div>
+                      <div class="btn btn-primary" v-on:click="upload(order)" v-if="!order.loading">⬆️</div>
                     </td>
                   </tr>
                 </tbody>
@@ -67,6 +68,9 @@ export default {
     };
   },
   methods: {
+    upload(order) {
+      this.socket.emit("upload", { hires_path: order.hires_path, name: order.name });
+    },
     editName(order) {
       var input;
       input = prompt("Enter new name for "+order.order_uuid+":", strftime("%d.%m.%y"));

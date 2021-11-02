@@ -58,6 +58,14 @@ io.on('connection', socket => {
     }
   });
 
+  socket.on("upload", what_do => {
+    var upload_order = set_order_loading_by_path(what_do["hires_path"], true);
+    io.emit("machines", machines)
+    disk.uploadDir("/root/symlinks/"+upload_order.name, "/", function() {
+      console.log("Uploaded");
+    })
+  })
+
   socket.on("symlink", what_do => {
     set_order_loading_by_path(what_do["hires_path"], true);
     io.emit("machines", machines)
