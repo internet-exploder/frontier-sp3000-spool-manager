@@ -167,9 +167,21 @@ var resolve_order = function(key, dirpath, paths) {
         sorted_orders[bruh] = orders[key][bruh];
       });
       console.log(sorted_orders);
-      machines[key]["outspool_last"] = sorted_orders;
+      machines[key]["outspool_last"] = getSortedHash(sorted_orders);
     }
   });
+}
+
+function getSortedHash(inputHash){
+  var resultHash = {};
+
+  var keys = Object.keys(inputHash);
+  keys.sort(function(a, b) {
+    return inputHash[a] - inputHash[b]
+  }).reverse().forEach(function(k) {
+    resultHash[k] = inputHash[k];
+  });
+  return resultHash;
 }
 // // const getApiAndEmit = "TODO";
 
