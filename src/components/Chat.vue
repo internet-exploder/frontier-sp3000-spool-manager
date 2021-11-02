@@ -9,20 +9,35 @@
         <div class="card-body">
           <div class="machines" v-for="(machine, ind) in machines" :key="ind">
             <div class="machine">
-              <div class="badge badge-primary">{{ ind }}</div>
+              <div class="btn btn-primary">{{ ind }}</div>
               &nbsp;
-              <div class="badge" v-bind:class="{ 'badge-success': machines[ind].status == 'online', 'badge-secondary': machines[ind].status == 'offline' }">{{ machines[ind].status }}</div>
+              <div class="btn" v-bind:class="{ 'btn-success': machines[ind].status == 'online', 'btn-secondary': machines[ind].status == 'offline' }">{{ machines[ind].status }}</div>
               &nbsp;
-              <div class="badge" v-bind:class="{ 'badge-success': machines[ind].outspool_mounted, 'badge-secondary': !machines[ind].outspool_mounted }">OutSpool</div>
+              <div class="btn" v-bind:class="{ 'btn-success': machines[ind].outspool_mounted, 'btn-secondary': !machines[ind].outspool_mounted }">OutSpool</div>
               &nbsp;
-              <div class="badge" v-bind:class="{ 'badge-success': machines[ind].photos_mounted, 'badge-secondary': !machines[ind].photos_mounted }">Photos</div>
+              <div class="btn" v-bind:class="{ 'btn-success': machines[ind].photos_mounted, 'btn-secondary': !machines[ind].photos_mounted }">Photos</div>
               &nbsp;
-              <div class="badge btn" v-on:click="virsh_toggle(ind)" v-bind:class="{ 'badge-success': machines[ind].status == 'offline', 'badge-danger': machines[ind].status == 'online' }">
+              <div class="btn btn" v-on:click="virsh_toggle(ind)" v-bind:class="{ 'btn-success': machines[ind].status == 'offline', 'btn-danger': machines[ind].status == 'online' }">
                 {{ machines[ind].status == "online" ? "Stop" : "Start" }}
               </div>
-              <div class="card" v-for="(order, ind) in machines[ind].outspool_last" :key="ind">
-                <div class="well">{{ ind }} {{ order }}</div>
-              </div>
+              <table class="table mt-3">
+                <thead>
+                  <tr>
+                    <th>order id</th>
+                    <th>outspool</th>
+                    <th>complete</th>
+                    <th>hires</th>
+                  </tr>
+                </thead>
+                <tbody v-for="(order, ind) in machines[ind].outspool_last" :key="ind">
+                  <tr>
+                    <td>{{ order.order_id }}</td>
+                    <td>{{ order.outspool_folder }}</td>
+                    <td>{{ order.complete }}</td>
+                    <td>{{ order.hires_path }}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
           <div class="messages" v-for="(msg, index) in messages" :key="index">

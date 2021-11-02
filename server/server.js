@@ -48,6 +48,8 @@ io.on('connection', socket => {
 
   socket.on("virsh", what_do => {
     if ((["start", "shutdown"].indexOf(what_do["cmd"]) > -1) && (Object.keys(machines).indexOf(what_do["name"]) > -1)) {
+      machines[what_do["name"]]["status"] = "busy";
+      io.emit("machines", machines)
       exec('virsh '+what_do["cmd"]+' '+what_do["name"], (error, stdout, stderr) => {
         if (error) { console.log(`error: ${error.message}`); return; }
         if (stderr) { console.log(`stderr: ${stderr}`); return; }
@@ -59,13 +61,11 @@ io.on('connection', socket => {
 })
 
 setInterval(function() {
-  console.log("processing update");
   Object.keys(machines).forEach(function(key) {
-    console.log(key);
     get_status(key);
   })
   io.emit("machines", machines)
-}, 1000)
+}, 2000)
 
 var get_status = function(key) {
   // Check wether machine is running
@@ -164,7 +164,9 @@ var resolve_order = function(key, dirpath, paths) {
     exec("find /mnt/"+key+"_photos/Job_*/Roll*/hires | grep -i jpg | sed 's/\(.*\)-.*/\1/' | grep "+order_id+"; exit 0", (error, stdout, stderr) => {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
-      var hires_path = stdout.split("\n")[0];
+      var hires_path = stdout.split("\n")[0].split("/");
+      hires_path.pop();
+      hires_path = hires_path.join("/");
       orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path })
       if (orders[key].length == paths.length) {
         machines[key]["outspool_last"] = orders[key].sort((a, b) => (a.order_id < b.order_id) ? 1 : -1);
