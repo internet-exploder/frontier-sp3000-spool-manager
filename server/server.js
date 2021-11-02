@@ -165,6 +165,7 @@ var resolve_order = function(key, dirpath, paths) {
       var sorted_orders = {};
       console.log(Object.keys(orders[key]).sort().reverse());
       Object.keys(orders[key]).sort().reverse().forEach(function(bruh) {
+        console.log(bruh);
         sorted_orders[bruh] = orders[key][bruh];
       });
       machines[key]["outspool_last"] = sorted_orders;
