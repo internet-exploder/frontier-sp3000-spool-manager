@@ -4,6 +4,7 @@ const socket = require('socket.io');
 const server = app.listen(process.env.PORT || 4001, () => console.log(`Running on http://localhost:4001`));
 const axios = require("axios");
 const { exec } = require("child_process");
+const { parse } = require('path');
 
 //socket setup
 const io = socket(server);
@@ -17,10 +18,12 @@ app.get("/", (req, res) => {
 
 machines = {
   "xp3": {
-    status: "offline"
+    status: "offline",
+    ip: "192.168.3.5"
   },
   "xp2": {
-    status: "offline"
+    status: "offline",
+    ip: "192.168.4.5"
   }
 }
 
@@ -42,18 +45,26 @@ setInterval(function() {
 }, 1000)
 
 var get_status = function(key) {
+  // Check wether machine is running
   exec('virsh list --all | grep "'+key+'.*running" | wc -l', (error, stdout, stderr) => {
-    if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-    }
+    if (error) { console.log(`error: ${error.message}`); return; }
+    if (stderr) { console.log(`stderr: ${stderr}`); return; }
     console.log(`stdout: ${stdout}`);
     if (parseInt(stdout) > 0) {
       machines[key]["status"] = "online"
+      // Check wether share has been mounted
+      exec('mount | grep "'+key+'.*outspool" | wc -l', (error, stdout, stderr) => {
+        if (error) { console.log(`error: ${error.message}`); return; }
+        if (stderr) { console.log(`stderr: ${stderr}`); return; }
+        console.log(`stdout: ${stdout}`);
+        if (parseInt(stdout) == 0) {
+          exec('mount -t cifs -o vers=1.0,credentials=/root/.cifs //'+machines['key']['ip']+'/OutSpool /mnt/'+key+'_outspool', (error, stdout, stderr) => {
+            if (error) { console.log(`error: ${error.message}`); return; }
+            if (stderr) { console.log(`stderr: ${stderr}`); return; }
+            console.log(`stdout: ${stdout}`);
+          }
+        }
+      }
     } else {
       machines[key]["status"] = "offline"
     }
