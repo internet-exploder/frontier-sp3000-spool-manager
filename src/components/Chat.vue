@@ -24,7 +24,7 @@
                 {{ machines[ind].status == "online" ? "Stop" : "Start" }}
               </div>
               <div class="card" v-for="(order, ind) in machines[ind].outspool_last" :key="ind">
-                <div class="well">{{ order }}</div>
+                <div class="well">{{ ind }} {{ order }}</div>
               </div>
             </div>
           </div>

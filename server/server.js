@@ -111,6 +111,7 @@ var get_status = function(key) {
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           orders[key] = {}
           var paths = stdout.split("\n").filter(n => n).reverse();
+          console.log(paths);
           for (var dirpath of paths) {
             resolve_order(key, dirpath, paths)
           }
