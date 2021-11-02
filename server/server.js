@@ -64,15 +64,12 @@ io.on('connection', socket => {
         if (error) { console.log(`error: ${error.message}`); return; }
         if (stderr) { console.log(`stderr: ${stderr}`); return; }
         console.log(stdout);
-        io.emit("machines", machines)
       });
     }
     exec('ln -s '+what_do["hires_path"]+' "/root/symlinks/'+what_do["name"]+'"', (error, stdout, stderr) => {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
       console.log(stdout);
-      symlinks[what_do["hires_path"]] = what_do["name"];
-      io.emit("machines", machines)
     });
   });
   // socket.emit('sent', `Ye bhja ha`)
@@ -208,7 +205,7 @@ var resolve_order = function(key, dirpath, paths) {
         var order_uuid = stdout.split(".")[0].split("/").reverse()[0];
         var symlink_name = "";
         if (Object.keys(symlinks).indexOf(hires_path) > -1) { symlink_name = symlinks[hires_path] }
-        orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path, order_uuid: order_uuid, name: symlink_name })
+        orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path, order_uuid: order_uuid, name: symlink_name, loading: false })
         if (orders[key].length == paths.length) {
           machines[key]["outspool_last"] = orders[key].sort((a, b) => (a.order_id < b.order_id) ? 1 : -1);
         }

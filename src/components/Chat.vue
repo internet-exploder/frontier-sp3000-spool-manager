@@ -42,6 +42,7 @@
                     <td>{{ order.name }}</td>
                     <td>
                       <div class="btn btn-success" v-on:click="editName(order)">✏️</div>
+                      <div class="btn btn-secondary" v-if="order.loading == true">🕘</div>
                     </td>
                   </tr>
                 </tbody>
@@ -73,6 +74,8 @@ export default {
         return; //break out of the function early
       }
       var new_name = input;
+      order.loading = true;
+      Console.log(order);
       this.socket.emit("symlink", { hires_path: order.hires_path, name: new_name });
     },
     virsh_toggle(key) {
