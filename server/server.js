@@ -59,6 +59,7 @@ io.on('connection', socket => {
   });
 
   socket.on("symlink", what_do => {
+    set_order_loading_by_path(what_do["hires_path"], true);
     if (Object.keys(symlinks).indexOf(what_do["hires_path"]) > -1) {
       exec('rm "/root/symlinks/'+symlinks[what_do["hires_path"]]+'"', (error, stdout, stderr) => {
         if (error) { console.log(`error: ${error.message}`); return; }
@@ -70,6 +71,7 @@ io.on('connection', socket => {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
       console.log(stdout);
+      set_order_loading_by_path(what_do["hires_path"], false);
     });
   });
   // socket.emit('sent', `Ye bhja ha`)
@@ -94,6 +96,19 @@ setInterval(function() {
     }
   });
 }, 2000)
+
+var set_order_loading_by_path = function(hires_path, loading) {
+  var found_order = null;
+  Object.keys(orders).forEach(function(key) {
+    for (var i = 0; i < orders[key].length; i++) {
+      if (orders[key][i]["hires_path"] == hires_path) {
+        orders[key][i]["loading"] = loading;
+        found_order = orders[key][i];
+      }
+    }
+  })
+  return found_order;
+}
 
 var get_status = function(key) {
   // Check wether machine is running
