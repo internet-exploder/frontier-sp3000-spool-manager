@@ -58,7 +58,7 @@ var get_status = function(key) {
         if (stderr) { console.log(`stderr: ${stderr}`); return; }
         console.log(`stdout: ${stdout}`);
         if (parseInt(stdout) == 0) {
-          exec('mount -t cifs -o vers=1.0,credentials=/root/.cifs //'+machines['key']['ip']+'/OutSpool /mnt/'+key+'_outspool', (error, stdout, stderr) => {
+          exec('mount -t cifs -o vers=1.0,credentials=/root/.cifs //'+machines[key]['ip']+'/OutSpool /mnt/'+key+'_outspool', (error, stdout, stderr) => {
             if (error) { console.log(`error: ${error.message}`); return; }
             if (stderr) { console.log(`stderr: ${stderr}`); return; }
             console.log(`stdout: ${stdout}`);
