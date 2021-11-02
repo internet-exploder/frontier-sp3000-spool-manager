@@ -37,6 +37,16 @@ io.on('connection', socket => {
     console.log(data);
     io.emit('MESSAGE', data)
   });
+
+  socket.on("virsh", what_do => {
+    if ((["start", "stop"].indexOf(what_do["cmd"]) > -1) && (Object(machines).keys.indexOf(what_do["name"]) > -1)) {
+      exec('virsh '+what_do["cmd"]+' '+what_do["name"], (error, stdout, stderr) => {
+        if (error) { console.log(`error: ${error.message}`); return; }
+        if (stderr) { console.log(`stderr: ${stderr}`); return; }
+        console.log(stdout);
+      });
+    }
+  });
   // socket.emit('sent', `Ye bhja ha`)
 })
 

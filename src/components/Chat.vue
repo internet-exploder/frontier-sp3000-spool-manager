@@ -12,10 +12,17 @@
           </div>
           <div class="machines" v-for="(machine, ind) in machines" :key="ind">
             <div class="machine">
-              <div class="badge">{{ ind }}</div>
-              <div class="badge">{{ machines[ind].status }}</div>
-              <div class="badge">{{ machines[ind].outspool_mounted }}</div>
-              <div class="badge">{{ machines[ind].photos_mounted }}</div>
+              <div class="badge badge-primary">{{ ind }}</div>
+              &nbsp;
+              <div class="badge" v-bind:class="{ 'badge-success': machines[ind].status == 'online', 'badge-secondary': machines[ind].status == 'offline' }">{{ machines[ind].status }}</div>
+              &nbsp;
+              <div class="badge" v-bind:class="{ 'badge-success': machines[ind].outspool_mounted, 'badge-secondary': !machines[ind].outspool_mounted }">OutSpool</div>
+              &nbsp;
+              <div class="badge" v-bind:class="{ 'badge-success': machines[ind].photos_mounted, 'badge-secondary': !machines[ind].photos_mounted }">Photos</div>
+              &nbsp;
+              <div class="badge btn" v-on:click="virsh_toggle(ind)" v-bind:class="{ 'badge-success': machines[ind].status == 'offline', 'badge-danger': machines[ind].status == 'online' }">
+                {{ machines[ind].status == "online" ? "Stop" : "Start" }}
+              </div>
             </div>
           </div>
           <div class="messages" v-for="(msg, index) in messages" :key="index">
@@ -45,6 +52,7 @@
 
 <script>
 import io from "socket.io-client";
+var Console = console;
 export default {
   data() {
     return {
@@ -63,6 +71,14 @@ export default {
         message: this.message
       });
       this.message = "";
+    },
+    virsh_toggle(key) {
+      Console.log(key)
+      if (this.machines[key]["status"] == "online") {
+        this.socket.emit("virsh", { cmd: "stop", name: key });
+      } else {
+        this.socket.emit("virsh", { cmd: "start", name: key });
+      }
     }
   },
   mounted() {
