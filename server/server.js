@@ -111,7 +111,7 @@ var get_status = function(key) {
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           orders[key] = {}
           var paths = stdout.split("\n").filter(n => n);
-          console.log(paths);
+          //console.log(paths);
           for (var dirpath of paths) {
             resolve_order(key, dirpath, paths)
           }
@@ -163,6 +163,7 @@ var resolve_order = function(key, dirpath, paths) {
     orders[key][order_id] = { outspool_folder: kekpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
     if (Object.keys(orders[key]).length == paths.length) {
       var sorted_orders = {};
+      console.log(Object.keys(orders[key]).sort().reverse());
       Object.keys(orders[key]).sort().reverse().forEach(function(bruh) {
         sorted_orders[bruh] = orders[key][bruh];
       });
