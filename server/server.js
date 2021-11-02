@@ -62,9 +62,9 @@ var get_status = function(key) {
             if (error) { console.log(`error: ${error.message}`); return; }
             if (stderr) { console.log(`stderr: ${stderr}`); return; }
             console.log(`stdout: ${stdout}`);
-          }
+          });
         }
-      }
+      });
     } else {
       machines[key]["status"] = "offline"
     }
