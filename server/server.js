@@ -161,7 +161,7 @@ var resolve_order = function(key, dirpath, paths) {
     if (stderr) { console.log(`stderr: ${stderr}`); return; }
     var order_id = parseInt(stdout.split("\n")[0]);
     var complete = (stdout.split("\n").filter(n => n).length > 1);
-    exec("find /mnt/"+key+"_photos/Job_*/Roll*/hires | grep -i jpg | sed 's/\(.*\)-.*/\1/' | grep "+order_id, (error, stdout, stderr) => {
+    exec("find /mnt/"+key+"_photos/Job_*/Roll*/hires | grep -i jpg | sed 's/\(.*\)-.*/\1/' | grep "+order_id+"; exit 0", (error, stdout, stderr) => {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
       var hires_path = stdout.split("\n")[0];
