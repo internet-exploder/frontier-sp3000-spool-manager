@@ -33,6 +33,12 @@ machines = {
   }
 }
 
+var orders = {}
+
+Object.keys(machines).forEach(function(key) {
+  orders[key] = {};
+});
+
 io.on('connection', socket => {
   io.emit("machines", machines)
   socket.on('SEND_MESSAGE', data => {
@@ -102,7 +108,7 @@ var get_status = function(key) {
         exec('ls /mnt/'+key+'_outspool | egrep -v "Device|ORDERINF|OrderPacks" | tail', (error, stdout, stderr) => {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
-          var orders = {}
+          orders[key] = {}
           var paths = stdout.split("\n").filter(n => n);
           for (var dirpath of paths) {
             //console.log('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "');
@@ -111,10 +117,10 @@ var get_status = function(key) {
               if (stderr) { console.log(`stderr: ${stderr}`); return; }
               var order_id = parseInt(stdout.split("\n")[0]);
               console.log("order_id: "+order_id);
-              orders[order_id] = { outspool_folder: dirpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
-              console.log("orders: "+orders.length+" paths: "+paths.length);
+              orders[key][order_id] = { outspool_folder: dirpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
+              console.log("orders: "+orders[key].length+" paths: "+paths.length);
               if (orders.length == paths.length) {
-                machines[key]["outspool_last"] = orders;
+                machines[key]["outspool_last"] = orders[key];
               }
             });
           }
