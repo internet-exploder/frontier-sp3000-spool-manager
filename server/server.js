@@ -89,7 +89,7 @@ setInterval(function() {
     for (var rawlink of symlinks_raw) {
       symlinks[rawlink.split(" -> ")[1].slice(1, -1)] = rawlink.split(" -> ")[0].slice(1, -1);
     }
-  }
+  });
 }, 2000)
 
 var get_status = function(key) {
