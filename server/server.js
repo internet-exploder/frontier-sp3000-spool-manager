@@ -45,10 +45,6 @@ Object.keys(machines).forEach(function(key) {
 
 io.on('connection', socket => {
   io.emit("machines", machines)
-  socket.on('SEND_MESSAGE', data => {
-    console.log(data);
-    io.emit('MESSAGE', data)
-  });
 
   socket.on("virsh", what_do => {
     if ((["start", "shutdown"].indexOf(what_do["cmd"]) > -1) && (Object.keys(machines).indexOf(what_do["name"]) > -1)) {
@@ -68,12 +64,14 @@ io.on('connection', socket => {
         if (error) { console.log(`error: ${error.message}`); return; }
         if (stderr) { console.log(`stderr: ${stderr}`); return; }
         console.log(stdout);
+        io.emit("machines", machines)
       });
     }
     exec('ln -s '+what_do["hires_path"]+' "/root/symlinks/'+what_do["name"]+'"', (error, stdout, stderr) => {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
       console.log(stdout);
+      io.emit("machines", machines)
     });
   });
   // socket.emit('sent', `Ye bhja ha`)
