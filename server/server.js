@@ -39,7 +39,7 @@ io.on('connection', socket => {
   });
 
   socket.on("virsh", what_do => {
-    if ((["start", "stop"].indexOf(what_do["cmd"]) > -1) && (Object(machines).keys.indexOf(what_do["name"]) > -1)) {
+    if ((["start", "stop"].indexOf(what_do["cmd"]) > -1) && (Object.keys(machines).indexOf(what_do["name"]) > -1)) {
       exec('virsh '+what_do["cmd"]+' '+what_do["name"], (error, stdout, stderr) => {
         if (error) { console.log(`error: ${error.message}`); return; }
         if (stderr) { console.log(`stderr: ${stderr}`); return; }
