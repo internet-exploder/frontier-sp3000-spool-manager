@@ -152,7 +152,7 @@ var get_status = function(key) {
   });
 }
 
-var resolve_order = function(ind, dirpath) {
+var resolve_order = function(key, dirpath) {
   var kekpath = dirpath;
             //console.log('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "');
             exec('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
