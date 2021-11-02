@@ -6,6 +6,7 @@ const axios = require("axios");
 const { exec } = require("child_process");
 const { parse } = require('path');
 var YandexDisk = require('yandex-disk').YandexDisk;
+const { symlink } = require('fs');
 var disk = new YandexDisk(process.env.YADISK_OAUTH_TOKEN);
 
 //socket setup
@@ -36,6 +37,7 @@ machines = {
 }
 
 var orders = {}
+var symlinks = {}
 
 Object.keys(machines).forEach(function(key) {
   orders[key] = [];
@@ -70,11 +72,24 @@ io.on('connection', socket => {
   // socket.emit('sent', `Ye bhja ha`)
 })
 
+// Update status of each machine
 setInterval(function() {
   Object.keys(machines).forEach(function(key) {
     get_status(key);
   })
   io.emit("machines", machines)
+}, 2000)
+
+// Update symlinks folder
+setInterval(function() {
+  exec(`QUOTING_STYLE=c ls -l /root/symlinks | grep "\->" | sed 's/^[^\"]*\"/\"/g'`, (error, stdout, stderr) => {
+    if (error) { console.log(`error: ${error.message}`); return; }
+    if (stderr) { console.log(`stderr: ${stderr}`); return; }
+    var symlinks_raw = stdout.split("\n").filter(n => n)
+    for (var rawlink of symlinks_raw) {
+      symlinks[rawlink.split(" -> ")[1].slice(1, -1)] = rawlink.split(" -> ")[0].slice(1, -1);
+    }
+  }
 }, 2000)
 
 var get_status = function(key) {
@@ -185,7 +200,9 @@ var resolve_order = function(key, dirpath, paths) {
         if (error) { console.log(`error: ${error.message}`); return; }
         if (stderr) { console.log(`stderr: ${stderr}`); return; }
         var order_uuid = stdout.split(".")[0].split("/").reverse()[0];
-        orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path, order_uuid: order_uuid })
+        var symlink_name = "";
+        if (Object.keys(symlinks).indexOf(hires_path) > -1) { symlink_name = symlinks[hires_path] }
+        orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path, order_uuid: order_uuid, name: symlink_name })
         if (orders[key].length == paths.length) {
           machines[key]["outspool_last"] = orders[key].sort((a, b) => (a.order_id < b.order_id) ? 1 : -1);
         }
