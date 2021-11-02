@@ -23,6 +23,7 @@
               <table class="table mt-3">
                 <thead>
                   <tr>
+                    <th>scan id</th>
                     <th>order id</th>
                     <th>outspool</th>
                     <th>complete</th>
@@ -32,6 +33,7 @@
                 <tbody v-for="(order, ind) in machines[ind].outspool_last" :key="ind">
                   <tr>
                     <td>{{ order.order_id }}</td>
+                    <td>{{ order.order_uuid }}</td>
                     <td>{{ order.outspool_folder }}</td>
                     <td>{{ order.complete }}</td>
                     <td>{{ order.hires_path }}</td>
