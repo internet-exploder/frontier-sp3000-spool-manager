@@ -14,6 +14,8 @@
             <div class="machine">
               <div class="badge">{{ ind }}</div>
               <div class="badge">{{ machines[ind].status }}</div>
+              <div class="badge">{{ machines[ind].outspool_mounted }}</div>
+              <div class="badge">{{ machines[ind].photos_mounted }}</div>
             </div>
           </div>
           <div class="messages" v-for="(msg, index) in messages" :key="index">

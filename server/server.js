@@ -19,11 +19,15 @@ app.get("/", (req, res) => {
 machines = {
   "xp3": {
     status: "offline",
-    ip: "192.168.3.5"
+    ip: "192.168.3.5",
+    outspool_mounted: false,
+    photos_mounted: false
   },
   "xp2": {
     status: "offline",
-    ip: "192.168.4.5"
+    ip: "192.168.4.5",
+    outspool_mounted: false,
+    photos_mounted: false
   }
 }
 
@@ -42,6 +46,7 @@ setInterval(function() {
     console.log(key);
     get_status(key);
   })
+  io.emit("machines", machines)
 }, 1000)
 
 var get_status = function(key) {
@@ -59,11 +64,17 @@ var get_status = function(key) {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
       // Mount if online and not mounted
+      if (parseInt(stdout) > 0) {
+        machines[key]["outspool_mounted"] = true
+      } else {
+        machines[key]["outspool_mounted"] = false
+      }
       if ((parseInt(stdout) == 0) && (machines[key]["status"] == "online")) {
         exec('mount -t cifs -o vers=1.0,credentials=/root/.cifs //'+machines[key]['ip']+'/OutSpool /mnt/'+key+'_outspool', (error, stdout, stderr) => {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           console.log(`Mounted ${key} OutSpool`);
+          machines[key]["outspool_mounted"] = true
         });
       }
       // Unmount if offline and mounted
@@ -72,6 +83,7 @@ var get_status = function(key) {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           console.log(`Unmounted ${key} OutSpool`);
+          machines[key]["outspool_mounted"] = false
         });
       }
     });
@@ -81,11 +93,17 @@ var get_status = function(key) {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
       // Mount if online and not mounted
+      if (parseInt(stdout) > 0) {
+        machines[key]["photos_mounted"] = true
+      } else {
+        machines[key]["photos_mounted"] = false
+      }
       if ((parseInt(stdout) == 0) && (machines[key]["status"] == "online")) {
         exec('mount -t cifs -o vers=1.0,credentials=/root/.cifs //'+machines[key]['ip']+'/Photos /mnt/'+key+'_photos', (error, stdout, stderr) => {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           console.log(`Mounted ${key} Photos`);
+          machines[key]["photos_mounted"] = true
         });
       }
       // Unmount if offline and mounted
@@ -94,6 +112,7 @@ var get_status = function(key) {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           console.log(`Unmounted ${key} Photos`);
+          machines[key]["photos_mounted"] = false
         });
       }
     });
