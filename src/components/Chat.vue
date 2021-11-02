@@ -20,7 +20,7 @@
               <div class="btn btn" v-on:click="virsh_toggle(ind)" v-bind:class="{ 'btn-success': machines[ind].status == 'offline', 'btn-danger': machines[ind].status == 'online' }">
                 {{ machines[ind].status == "online" ? "Stop" : "Start" }}
               </div>
-              <table class="table mt-3">
+              <table class="table mt-3 table-hover">
                 <thead>
                   <tr>
                     <th>scan id</th>
@@ -28,6 +28,8 @@
                     <th>outspool</th>
                     <th>complete</th>
                     <th>hires</th>
+                    <th>Name</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody v-for="(order, ind) in machines[ind].outspool_last" :key="ind">
@@ -37,31 +39,16 @@
                     <td>{{ order.outspool_folder }}</td>
                     <td>{{ order.complete }}</td>
                     <td>{{ order.hires_path }}</td>
+                    <td>{{ order.name }}</td>
+                    <td>
+                      <div class="btn btn-success" v-on:click="editName(order)">✏️</div>
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
-          <div class="messages" v-for="(msg, index) in messages" :key="index">
-            <p>
-              <span class="font-weight-bold">{{ msg.user }}:</span>
-              {{ msg.message }}
-            </p>
-          </div>
         </div>
-      </div>
-      <div class="card-footer">
-        <form @submit.prevent="sendMessage">
-          <div class="form-group">
-            <label for="user">User:</label>
-            <input type="text" v-model="user" class="form-control" />
-          </div>
-          <div class="form-group pb-3">
-            <label for="message">Message:</label>
-            <input type="text" v-model="message" class="form-control" />
-          </div>
-          <button type="submit" class="btn btn-success">Send</button>
-        </form>
       </div>
     </div>
   </div>
@@ -69,25 +56,21 @@
 
 <script>
 import io from "socket.io-client";
+var strftime = require('strftime')
 var Console = console;
 export default {
   data() {
     return {
-      user: "",
-      message: "",
-      messages: [],
       socket: io("192.168.88.245:4001"),
       machines: {}
     };
   },
   methods: {
-    sendMessage(e) {
-      e.preventDefault();
-      this.socket.emit("SEND_MESSAGE", {
-        user: this.user,
-        message: this.message
-      });
-      this.message = "";
+    editName(order) {
+      var new_name = prompt("Enter new name for "+order.order_uuid+":", strftime("%d.%m.%y"));
+      Console.log(new_name);
+      Console.log(order.hires_path);
+      this.socket.emit("symlink", { hires_path: order.hires_path, name: new_name });
     },
     virsh_toggle(key) {
       Console.log(key)
@@ -99,10 +82,6 @@ export default {
     }
   },
   mounted() {
-    this.socket.on("MESSAGE", data => {
-      this.messages = [...this.messages, data];
-      // you can also do this.messages.push(data)
-    });
     this.socket.on("machines", data => {
       this.machines = data;
       window.machines = data;
@@ -112,4 +91,8 @@ export default {
 </script>
 
 <style>
+  .table > tbody > tr > td {
+    vertical-align: middle;
+    padding: 5px;
+  }
 </style>

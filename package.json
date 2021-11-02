@@ -8,8 +8,10 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@forevolve/bootstrap-dark": "^1.2.0-g6c89781692",
     "core-js": "^3.3.2",
     "socket.io-client": "^2.3.0",
+    "strftime": "^0.10.0",
     "vue": "^2.6.10",
     "vue-socket.io": "^3.0.7"
   },

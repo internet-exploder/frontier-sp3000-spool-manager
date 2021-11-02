@@ -5,6 +5,8 @@ const server = app.listen(process.env.PORT || 4001, () => console.log(`Running o
 const axios = require("axios");
 const { exec } = require("child_process");
 const { parse } = require('path');
+var YandexDisk = require('yandex-disk').YandexDisk;
+var disk = new YandexDisk(process.env.YADISK_OAUTH_TOKEN);
 
 //socket setup
 const io = socket(server);
@@ -56,6 +58,14 @@ io.on('connection', socket => {
         console.log(stdout);
       });
     }
+  });
+
+  socket.on("symlink", what_do => {
+    exec('ln -s '+what_do["hires_path"]+' "/root/symlinks/'+what_do["name"]+'"', (error, stdout, stderr) => {
+      if (error) { console.log(`error: ${error.message}`); return; }
+      if (stderr) { console.log(`stderr: ${stderr}`); return; }
+      console.log(stdout);
+    });
   });
   // socket.emit('sent', `Ye bhja ha`)
 })
