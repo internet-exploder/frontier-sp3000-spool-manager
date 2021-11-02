@@ -49,25 +49,56 @@ var get_status = function(key) {
   exec('virsh list --all | grep "'+key+'.*running" | wc -l', (error, stdout, stderr) => {
     if (error) { console.log(`error: ${error.message}`); return; }
     if (stderr) { console.log(`stderr: ${stderr}`); return; }
-    console.log(`stdout: ${stdout}`);
     if (parseInt(stdout) > 0) {
       machines[key]["status"] = "online"
-      // Check wether share has been mounted
-      exec('mount | grep "'+key+'.*outspool" | wc -l', (error, stdout, stderr) => {
-        if (error) { console.log(`error: ${error.message}`); return; }
-        if (stderr) { console.log(`stderr: ${stderr}`); return; }
-        console.log(`stdout: ${stdout}`);
-        if (parseInt(stdout) == 0) {
-          exec('mount -t cifs -o vers=1.0,credentials=/root/.cifs //'+machines[key]['ip']+'/OutSpool /mnt/'+key+'_outspool', (error, stdout, stderr) => {
-            if (error) { console.log(`error: ${error.message}`); return; }
-            if (stderr) { console.log(`stderr: ${stderr}`); return; }
-            console.log(`stdout: ${stdout}`);
-          });
-        }
-      });
     } else {
       machines[key]["status"] = "offline"
     }
+    // Check wether OutSpool share has been mounted
+    exec('mount | grep "'+key+'.*outspool" | wc -l', (error, stdout, stderr) => {
+      if (error) { console.log(`error: ${error.message}`); return; }
+      if (stderr) { console.log(`stderr: ${stderr}`); return; }
+      // Mount if online and not mounted
+      if ((parseInt(stdout) == 0) && (machines[key]["status"] == "online")) {
+        exec('mount -t cifs -o vers=1.0,credentials=/root/.cifs //'+machines[key]['ip']+'/OutSpool /mnt/'+key+'_outspool', (error, stdout, stderr) => {
+          if (error) { console.log(`error: ${error.message}`); return; }
+          if (stderr) { console.log(`stderr: ${stderr}`); return; }
+          console.log(`Mounted ${key} OutSpool`);
+        });
+      }
+      // Unmount if offline and mounted
+      if ((parseInt(stdout) > 0) && (machines[key]["status"] == "offline")) {
+        exec('umount /mnt/'+key+'_outspool', (error, stdout, stderr) => {
+          if (error) { console.log(`error: ${error.message}`); return; }
+          if (stderr) { console.log(`stderr: ${stderr}`); return; }
+          console.log(`Unmounted ${key} OutSpool`);
+        });
+      }
+    });
+
+    // Check wether Photos share has been mounted
+    exec('mount | grep "'+key+'.*photos" | wc -l', (error, stdout, stderr) => {
+      if (error) { console.log(`error: ${error.message}`); return; }
+      if (stderr) { console.log(`stderr: ${stderr}`); return; }
+      // Mount if online and not mounted
+      if ((parseInt(stdout) == 0) && (machines[key]["status"] == "online")) {
+        exec('mount -t cifs -o vers=1.0 //'+machines[key]['ip']+'/Photos /mnt/'+key+'_photos', (error, stdout, stderr) => {
+          if (error) { console.log(`error: ${error.message}`); return; }
+          if (stderr) { console.log(`stderr: ${stderr}`); return; }
+          console.log(`Mounted ${key} Photos`);
+        });
+      }
+      // Unmount if offline and mounted
+      if ((parseInt(stdout) > 0) && (machines[key]["status"] == "offline")) {
+        exec('umount /mnt/'+key+'_photos', (error, stdout, stderr) => {
+          if (error) { console.log(`error: ${error.message}`); return; }
+          if (stderr) { console.log(`stderr: ${stderr}`); return; }
+          console.log(`Unmounted ${key} Photos`);
+        });
+      }
+    });
+
+    
   });
 }
 
