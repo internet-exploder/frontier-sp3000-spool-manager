@@ -68,7 +68,7 @@ var get_status = function(key) {
       }
       // Unmount if offline and mounted
       if ((parseInt(stdout) > 0) && (machines[key]["status"] == "offline")) {
-        exec('umount /mnt/'+key+'_outspool', (error, stdout, stderr) => {
+        exec('umount -l /mnt/'+key+'_outspool', (error, stdout, stderr) => {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           console.log(`Unmounted ${key} OutSpool`);
@@ -90,7 +90,7 @@ var get_status = function(key) {
       }
       // Unmount if offline and mounted
       if ((parseInt(stdout) > 0) && (machines[key]["status"] == "offline")) {
-        exec('umount /mnt/'+key+'_photos', (error, stdout, stderr) => {
+        exec('umount -l /mnt/'+key+'_photos', (error, stdout, stderr) => {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           console.log(`Unmounted ${key} Photos`);
