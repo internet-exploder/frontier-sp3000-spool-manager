@@ -5,7 +5,7 @@ import VueSocketIO from 'vue-socket.io';
 
 Vue.config.productionTip = false
 
-export const SocketInstance = socketio('http://localhost:4001');
+export const SocketInstance = socketio('http://192.168.88.245:4001');
 // Vue.use(VueSocketIO, SocketInstance);
 
 Vue.use(new VueSocketIO({

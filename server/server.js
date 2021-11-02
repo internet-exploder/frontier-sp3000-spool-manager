@@ -42,7 +42,7 @@ setInterval(function() {
 }, 1000)
 
 var get_status = function(key) {
-  exec('virsh list --all | grep "xp2.*running" | wc -l', (error, stdout, stderr) => {
+  exec('virsh list --all | grep "'+key+'.*running" | wc -l', (error, stdout, stderr) => {
     if (error) {
         console.log(`error: ${error.message}`);
         return;

@@ -49,7 +49,7 @@ export default {
       user: "",
       message: "",
       messages: [],
-      socket: io("localhost:4001"),
+      socket: io("192.168.88.245:4001"),
       machines: {}
     };
   },
