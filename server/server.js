@@ -36,7 +36,7 @@ machines = {
 var orders = {}
 
 Object.keys(machines).forEach(function(key) {
-  orders[key] = {};
+  orders[key] = [];
 });
 
 io.on('connection', socket => {
@@ -109,8 +109,8 @@ var get_status = function(key) {
         exec('ls /mnt/'+key+'_outspool | egrep -v "Device|ORDERINF|OrderPacks" | tail', (error, stdout, stderr) => {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
-          orders[key] = {}
-          var paths = stdout.split("\n").filter(n => n);
+          orders[key] = []
+          var paths = stdout.split("\n").filter(n => n).reverse();
           //console.log(paths);
           for (var dirpath of paths) {
             resolve_order(key, dirpath, paths)
@@ -160,28 +160,11 @@ var resolve_order = function(key, dirpath, paths) {
     if (error) { console.log(`error: ${error.message}`); return; }
     if (stderr) { console.log(`stderr: ${stderr}`); return; }
     var order_id = parseInt(stdout.split("\n")[0]);
-    orders[key][order_id] = { outspool_folder: kekpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
-    if (Object.keys(orders[key]).length == paths.length) {
-      var sorted_orders = {};
-      Object.keys(orders[key]).sort().reverse().forEach(function(bruh) {
-        sorted_orders[bruh] = orders[key][bruh];
-      });
-      console.log(sorted_orders);
-      machines[key]["outspool_last"] = getSortedHash(sorted_orders);
+    orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: (stdout.split("\n").filter(n => n).length > 1) })
+    if (orders[key].length == paths.length) {
+      machines[key]["outspool_last"] = orders[key];
     }
   });
-}
-
-function getSortedHash(inputHash){
-  var resultHash = {};
-
-  var keys = Object.keys(inputHash);
-  keys.sort(function(a, b) {
-    return parseInt(a) - parseInt(b)
-  }).reverse().forEach(function(k) {
-    resultHash[k] = inputHash[k];
-  });
-  return resultHash;
 }
 // // const getApiAndEmit = "TODO";
 
