@@ -167,6 +167,7 @@ var resolve_order = function(key, dirpath, paths) {
       var hires_path = stdout.split("\n")[0].split("/");
       hires_path.pop();
       hires_path = hires_path.join("/");
+      console.log(hires_path);
       var order_path = hires_path.split("/");
       order_path.pop();
       order_path = order_path.join("/");
