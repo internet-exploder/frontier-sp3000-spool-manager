@@ -82,7 +82,7 @@ setInterval(function() {
 
 // Update symlinks folder
 setInterval(function() {
-  exec(`QUOTING_STYLE=c ls -l /root/symlinks | grep "\->" | sed 's/^[^\"]*\"/\"/g'`, (error, stdout, stderr) => {
+  exec("QUOTING_STYLE=c ls -l /root/symlinks | grep \"\\\->\" | sed 's/^[^\\\"]*\\\"/\\\"/g'", (error, stdout, stderr) => {
     if (error) { console.log(`error: ${error.message}`); return; }
     if (stderr) { console.log(`stderr: ${stderr}`); return; }
     var symlinks_raw = stdout.split("\n").filter(n => n)
