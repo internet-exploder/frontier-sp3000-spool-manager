@@ -110,6 +110,7 @@ var get_status = function(key) {
               if (error) { console.log(`error: ${error.message}`); return; }
               if (stderr) { console.log(`stderr: ${stderr}`); return; }
               var order_id = parseInt(stdout.split("\n")[0]);
+              console.log("order_id: "+order_id);
               orders[order_id] = { outspool_folder: dirpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
               console.log("orders: "+orders.length+" paths: "+paths.length);
               if (orders.length == paths.length) {
