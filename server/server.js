@@ -104,6 +104,7 @@ var get_status = function(key) {
           machines[key]["outspool_mounted"] = false
         });
       }
+      // if Mounted collect orders
       if (parseInt(stdout) > 0) {
         exec('ls /mnt/'+key+'_outspool | egrep -v "Device|ORDERINF|OrderPacks" | tail', (error, stdout, stderr) => {
           if (error) { console.log(`error: ${error.message}`); return; }
@@ -111,21 +112,7 @@ var get_status = function(key) {
           orders[key] = {}
           var paths = stdout.split("\n").filter(n => n);
           for (var dirpath of paths) {
-            var kekpath = dirpath;
-            //console.log('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "');
-            exec('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
-              console.log("immediate DIRPATH: "+kekpath);
-              var dirpath = dirpath;
-              if (error) { console.log(`error: ${error.message}`); return; }
-              if (stderr) { console.log(`stderr: ${stderr}`); return; }
-              var order_id = parseInt(stdout.split("\n")[0]);
-              console.log("order_id: "+order_id);
-              orders[key][order_id] = { outspool_folder: dirpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
-              console.log("orders: "+Object.keys(orders[key]).length+" paths: "+paths.length);
-              if (Object.keys(orders[key]).length == paths.length) {
-                machines[key]["outspool_last"] = orders[key];
-              }
-            });
+            resolve_order(key, dirpath)
           }
           //machines[key]["outspool_last"] = stdout.split("\n");
         });
@@ -165,6 +152,23 @@ var get_status = function(key) {
   });
 }
 
+var resolve_order = function(ind, dirpath) {
+  var kekpath = dirpath;
+            //console.log('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "');
+            exec('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
+              console.log("immediate DIRPATH: "+kekpath);
+              var dirpath = dirpath;
+              if (error) { console.log(`error: ${error.message}`); return; }
+              if (stderr) { console.log(`stderr: ${stderr}`); return; }
+              var order_id = parseInt(stdout.split("\n")[0]);
+              console.log("order_id: "+order_id);
+              orders[key][order_id] = { outspool_folder: dirpath, complete: (stdout.split("\n").filter(n => n).length > 1) }
+              console.log("orders: "+Object.keys(orders[key]).length+" paths: "+paths.length);
+              if (Object.keys(orders[key]).length == paths.length) {
+                machines[key]["outspool_last"] = orders[key];
+              }
+            });
+}
 // // const getApiAndEmit = "TODO";
 
 // const express = require('express');
