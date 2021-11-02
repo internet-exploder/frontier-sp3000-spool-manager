@@ -71,6 +71,7 @@ io.on('connection', socket => {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
       console.log(stdout);
+      symlinks[what_do["hires_path"]] = what_do["name"];
       io.emit("machines", machines)
     });
   });
