@@ -160,10 +160,16 @@ var resolve_order = function(key, dirpath, paths) {
     if (error) { console.log(`error: ${error.message}`); return; }
     if (stderr) { console.log(`stderr: ${stderr}`); return; }
     var order_id = parseInt(stdout.split("\n")[0]);
-    orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: (stdout.split("\n").filter(n => n).length > 1) })
-    if (orders[key].length == paths.length) {
-      machines[key]["outspool_last"] = orders[key].sort((a, b) => (a.order_id < b.order_id) ? 1 : -1);
-    }
+    var complete = (stdout.split("\n").filter(n => n).length > 1);
+    exec("find /mnt/"+key+"_photos/Job_*/Roll*/hires | grep -i jpg | sed 's/\(.*\)-.*/\1/' | grep "+order_id, (error, stdout, stderr) => {
+      if (error) { console.log(`error: ${error.message}`); return; }
+      if (stderr) { console.log(`stderr: ${stderr}`); return; }
+      var hires_path = stdout.split("\n")[0];
+      orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path })
+      if (orders[key].length == paths.length) {
+        machines[key]["outspool_last"] = orders[key].sort((a, b) => (a.order_id < b.order_id) ? 1 : -1);
+      }
+    });
   });
 }
 // // const getApiAndEmit = "TODO";

@@ -7,9 +7,6 @@
           <hr />
         </div>
         <div class="card-body">
-          <div class="machines_json">
-            {{ machines }}
-          </div>
           <div class="machines" v-for="(machine, ind) in machines" :key="ind">
             <div class="machine">
               <div class="badge badge-primary">{{ ind }}</div>
