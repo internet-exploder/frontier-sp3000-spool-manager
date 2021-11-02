@@ -113,6 +113,7 @@ var get_status = function(key) {
           for (var dirpath of paths) {
             //console.log('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "');
             exec('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
+              console.log("immediate DIRPATH: "+dirpath);
               var dirpath = dirpath;
               if (error) { console.log(`error: ${error.message}`); return; }
               if (stderr) { console.log(`stderr: ${stderr}`); return; }
