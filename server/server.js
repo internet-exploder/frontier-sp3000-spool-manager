@@ -96,6 +96,13 @@ var get_status = function(key) {
           machines[key]["outspool_mounted"] = false
         });
       }
+      if (parseInt(stdout) > 0) {
+        exec('ls /mnt/'+key+'_outspool | egrep -v "Device|ORDERINF" | tail', (error, stdout, stderr) => {
+          if (error) { console.log(`error: ${error.message}`); return; }
+          if (stderr) { console.log(`stderr: ${stderr}`); return; }
+          machines[key]["outspool_last"] = stdout.split("\n");
+        });
+      }
     });
 
     // Check wether Photos share has been mounted
