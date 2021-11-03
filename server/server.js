@@ -15,7 +15,6 @@ const io = socket(server);
 
 // const index = require("./routes/index");
 
-
 app.get("/", (req, res) => {
   res.send({ response: "I am alive" }).status(200);
 });
@@ -39,6 +38,7 @@ machines = {
 
 var orders = {}
 var symlinks = {}
+var uploads = {}
 
 Object.keys(machines).forEach(function(key) {
   orders[key] = [];
@@ -62,11 +62,14 @@ io.on('connection', socket => {
   socket.on("upload", what_do => {
     var upload_order = set_order_loading_by_path(what_do["hires_path"], true);
     io.emit("machines", machines)
+    uploads[upload_order["hires_path"]] = "inprogress";
     disk.uploadDir("/root/symlinks/"+upload_order.name, upload_order.name, function(err) {
       if (err) {
         console.log(err);
+        uploads[upload_order["hires_path"]] = "failed"
       } else {
         console.log("Uploaded");
+        uploads[upload_order["hires_path"]] = "complete"
       }
     })
   })
@@ -232,7 +235,9 @@ var resolve_order = function(key, dirpath, paths) {
         var order_uuid = stdout.split(".")[0].split("/").reverse()[0];
         var symlink_name = "";
         if (Object.keys(symlinks).indexOf(hires_path) > -1) { symlink_name = symlinks[hires_path] }
-        orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path, order_uuid: order_uuid, name: symlink_name, loading: false })
+        var upload_status = null;
+        if (Object.keys(uploads).indexOf(hires_path) > -1) { upload_status = uploads[hires_path] }
+        orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path, order_uuid: order_uuid, name: symlink_name, loading: false, upload_status: upload_status })
         if (orders[key].length == paths.length) {
           machines[key]["outspool_last"] = orders[key].sort((a, b) => (a.order_id < b.order_id) ? 1 : -1);
           io.emit("machines", machines)

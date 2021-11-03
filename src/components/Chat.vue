@@ -8,7 +8,7 @@
         </div>
         <div class="card-body">
           <div class="machines" v-for="(machine, ind) in machines" :key="ind">
-            <div class="machine">
+            <div class="machine text-left">
               <div class="btn btn-primary">{{ ind }}</div>
               &nbsp;
               <div class="btn" v-bind:class="{ 'btn-success': machines[ind].status == 'online', 'btn-secondary': machines[ind].status == 'offline' }">{{ machines[ind].status }}</div>
@@ -20,7 +20,7 @@
               <div class="btn btn" v-on:click="virsh_toggle(ind)" v-bind:class="{ 'btn-success': machines[ind].status == 'offline', 'btn-danger': machines[ind].status == 'online' }">
                 {{ machines[ind].status == "online" ? "Stop" : "Start" }}
               </div>
-              <table class="table mt-3 table-hover">
+              <table class="table mt-3 table-hover text-center">
                 <thead>
                   <tr>
                     <th>scan id</th>
@@ -40,10 +40,10 @@
                     <td>{{ order.complete }}</td>
                     <td>{{ order.hires_path }}</td>
                     <td>{{ order.name }}</td>
-                    <td>
+                    <td class="text-left">
                       <div class="btn btn-success" v-on:click="editName(order)" v-if="!order.loading">✏️</div>
-                      <div class="btn btn-secondary" v-if="order.loading">🕘</div>
-                      <div class="btn btn-primary" v-on:click="upload(order)" v-if="!order.loading">⬆️</div>
+                      <div class="btn btn-secondary" v-if="order.loading || order.upload_status = 'inprogress'">🕘</div>
+                      <div class="btn btn-primary" v-bind:class="{ 'btn-primary': order.upload_status == null, 'btn-danger': order.upload_status == 'failed', 'btn-success': order.upload_status == 'complete' }" v-on:click="upload(order)" v-if="!order.loading && order.name.length > 0 && order.upload_status != 'inprogress'">⬆️</div>
                     </td>
                   </tr>
                 </tbody>
