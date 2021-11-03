@@ -41,8 +41,8 @@
                     <td>{{ order.hires_path }}</td>
                     <td>{{ order.name }}</td>
                     <td class="text-left">
-                      <div class="btn btn-success" v-on:click="editName(order)" v-if="!order.loading">✏️</div>
-                      <div class="btn btn-secondary" v-if="order.loading || order.upload_status = 'inprogress'">🕘</div>
+                      <div class="btn btn-success" v-on:click="editName(order)" v-if="!(order.loading || order.upload_status == 'inprogress')">✏️</div>
+                      <div class="btn btn-secondary" v-if="order.loading || order.upload_status == 'inprogress'">🕘</div>
                       <div class="btn btn-primary" v-bind:class="{ 'btn-primary': order.upload_status == null, 'btn-danger': order.upload_status == 'failed', 'btn-success': order.upload_status == 'complete' }" v-on:click="upload(order)" v-if="!order.loading && order.name.length > 0 && order.upload_status != 'inprogress'">⬆️</div>
                     </td>
                   </tr>
