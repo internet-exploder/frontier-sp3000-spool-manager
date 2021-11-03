@@ -102,7 +102,7 @@ export default {
       window.machines = data;
     })
     this.socket.on("remote_folders", data => {
-      console.log(data);
+      Console.log(data);
     })
   }
 };
