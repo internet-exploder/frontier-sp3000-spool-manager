@@ -43,7 +43,7 @@
                     <td class="text-left">
                       <div class="btn btn-success" v-on:click="editName(order)" v-if="!(order.loading || order.upload_status == 'inprogress')">✏️</div>
                       <div class="btn btn-secondary" v-if="order.loading || order.upload_status == 'inprogress'">🕘</div>
-                      <div class="btn btn-primary" v-bind:class="{ 'btn-primary': order.upload_status == null, 'btn-danger': order.upload_status == 'failed', 'btn-success': order.upload_status == 'complete' }" v-on:click="upload(order)" v-if="!order.loading && order.name.length > 0 && order.upload_status != 'inprogress'">⬆️</div>
+                      <div class="btn btn-primary" v-bind:class="{ 'btn-primary': order.upload_status == null, 'btn-danger': order.upload_status == 'failed', 'btn-success': order.upload_status == 'complete' }" v-on:click="list_remote_folders(order)" v-if="!order.loading && order.name.length > 0 && order.upload_status != 'inprogress'">⬆️</div>
                     </td>
                   </tr>
                 </tbody>
@@ -64,10 +64,15 @@ export default {
   data() {
     return {
       socket: io("192.168.88.245:4001"),
-      machines: {}
+      machines: {},
+      selected_order: null
     };
   },
   methods: {
+    list_remote_folders(order) {
+      this.selected_order = order;
+      this.socket.emit("list_remote_folders", {});
+    },
     upload(order) {
       this.socket.emit("upload", { hires_path: order.hires_path, name: order.name });
     },
@@ -95,6 +100,9 @@ export default {
     this.socket.on("machines", data => {
       this.machines = data;
       window.machines = data;
+    })
+    this.socket.on("remote_folders", data => {
+      console.log(data);
     })
   }
 };

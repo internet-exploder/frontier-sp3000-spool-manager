@@ -59,6 +59,15 @@ io.on('connection', socket => {
     }
   });
 
+  socket.on("list_remote_folders", data => {
+    disk.readdir('/', function(err, output) {
+      if (err) {
+        console.log(err); return;
+      }
+      socket.emit("remote_folders", output);
+    });
+  })
+
   socket.on("upload", what_do => {
     var upload_order = set_order_loading_by_path(what_do["hires_path"], true);
     io.emit("machines", machines)
