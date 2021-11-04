@@ -74,6 +74,9 @@ io.on('connection', socket => {
     io.emit("machines", machines)
     uploads[upload_order["hires_path"]] = "inprogress";
     var tgt_path = what_do["folder"]+upload_order.name;
+    if ((typeof(what_do["folder"]) == "undefined") || (what_do["folder"] == null)) {
+      tgt_path = upload_order.name;
+    }
     disk.exists(tgt_path, function(err, exists) {
       if (err) {
         console.log(err);
@@ -82,7 +85,7 @@ io.on('connection', socket => {
         console.log("Dir "+upload_order.name+" already exists");
         uploads[upload_order["hires_path"]] = "failed"
       } else {
-        disk.uploadDir("/root/symlinks/"+upload_order.name, tgt_path+upload_order.name, function(err) {
+        disk.uploadDir("/root/symlinks/"+upload_order.name, tgt_path, function(err) {
           if (err) {
             console.log(err);
             uploads[upload_order["hires_path"]] = "failed"
