@@ -8,7 +8,7 @@
         </div>
         <div class="card-body">
           <div class="machines" v-for="(machine, ind) in machines" :key="ind">
-            <div class="machine text-left">
+            <div class="machine text-left" v-if="display_machine(ind)">
               <div class="btn btn-primary">{{ ind }}</div>
               &nbsp;
               <div class="btn" v-bind:class="{ 'btn-success': machines[ind].status == 'online', 'btn-secondary': machines[ind].status == 'offline' }">{{ machines[ind].status }}</div>
@@ -43,6 +43,7 @@
                     <td class="text-left">
                       <div class="btn btn-success" v-on:click="editName(order)" v-if="!(order.loading || order.upload_status == 'inprogress')">✏️</div>
                       <div class="btn btn-secondary" v-if="order.loading || order.upload_status == 'inprogress'">🕘</div>
+                      &nbsp;
                       <div class="btn btn-primary" v-bind:class="{ 'btn-primary': order.upload_status == null, 'btn-danger': order.upload_status == 'failed', 'btn-success': order.upload_status == 'complete' }" v-on:click="list_remote_folders(order)" v-b-modal="'select-folder-modal'" v-if="!order.loading && order.name.length > 0 && order.upload_status != 'inprogress'">⬆️</div>
                     </td>
                   </tr>
@@ -54,16 +55,18 @@
       </div>
     </div>
     <div>
-      <b-button v-b-modal="'select-folder-modal'">Select Folder</b-button>
       <b-modal id="select-folder-modal" @ok="upload(selected_order, selected_folder)">
         <template #modal-header>
           Select Folder
         </template>
         Selected: {{ selected_folder }}
         <br/><br/>
+        <div class="form-group">
+          <input v-model="filter_search" type="text" class="form-control" placeholder="Filter"/>
+        </div>
         <b-form-group v-slot="{ ariaDescribedby }">
           <b-form-radio v-model="selected_folder" :aria-describedby="ariaDescribedby" name="some-radios" value="/">/</b-form-radio>
-          <b-form-radio v-model="selected_folder" :aria-describedby="ariaDescribedby" name="some-radios" v-bind:value="folder.displayName" v-for="(folder, ind) in remote_folders" :key="ind">{{ folder.displayName }}</b-form-radio>
+          <b-form-radio v-model="selected_folder" :aria-describedby="ariaDescribedby" name="some-radios" v-bind:value="folder.displayName" v-for="(folder, ind) in filteredItems" :key="ind">{{ folder.displayName }}</b-form-radio>
         </b-form-group>
       </b-modal>
     </div>
@@ -72,12 +75,11 @@
 
 <script>
 import io from "socket.io-client";
-import { BButton, BModal, VBModal, BFormRadio, BFormGroup } from "bootstrap-vue";
+import { BModal, VBModal, BFormRadio, BFormGroup } from "bootstrap-vue";
 var strftime = require('strftime')
 var Console = console;
 export default {
   components: {
-    BButton,
     BModal,
     BFormRadio,
     BFormGroup
@@ -93,11 +95,18 @@ export default {
       machines: {},
       selected_order: null,
       remote_folders: [],
-      selected_folder: null
+      selected_folder: null,
+      filter_search: ""
     };
   },
   methods: {
+    display_machine(ind) {
+      if (location.hash == "") { return true }
+      if (ind == location.hash.split("#")[1]) { return true }
+      return false
+    },
     list_remote_folders(order) {
+      this.filter_search = ""
       this.selected_folder = "/"
       this.selected_order = order;
       this.socket.emit("list_remote_folders", {});
@@ -134,6 +143,13 @@ export default {
       Console.log(data);
       this.remote_folders = data;
     })
+  },
+  computed: {
+    filteredItems() {
+      return this.remote_folders.filter(item => {
+        return item.displayName.toLowerCase().indexOf(this.filter_search.toLowerCase()) > -1
+      })
+    }
   }
 };
 </script>

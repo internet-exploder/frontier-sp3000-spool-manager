@@ -242,30 +242,39 @@ var resolve_order = function(key, dirpath, paths) {
     if (error) { console.log(`error: ${error.message}`); return; }
     if (stderr) { console.log(`stderr: ${stderr}`); return; }
     var order_id = parseInt(stdout.split("\n")[0]);
-    var complete = (stdout.split("\n").filter(n => n).length > 1);
-    exec("find /mnt/"+key+"_photos/Job_*/Roll*/hires | grep -i jpg | sed 's/\(.*\)-.*/\1/' | grep "+order_id+"; exit 0", (error, stdout, stderr) => {
+    exec('grep Frame /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | wc -l', (error, stdout, stderr) => {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
-      var hires_path = stdout.split("\n")[0].split("/");
-      hires_path.pop();
-      hires_path = hires_path.join("/");
-      var order_path = hires_path.split("/");
-      order_path.pop();
-      order_path.pop();
-      order_path = order_path.join("/");
-      exec("find "+order_path+"/Orders | grep -i jpg; exit 0", (error, stdout, stderr) => {
+      var frames_cnt = parseInt(stdout);
+      exec("find /mnt/"+key+"_photos/Job_*/Roll*/hires | grep -i jpg | sed 's/\(.*\)-.*/\1/' | grep "+order_id+"; exit 0", (error, stdout, stderr) => {
         if (error) { console.log(`error: ${error.message}`); return; }
         if (stderr) { console.log(`stderr: ${stderr}`); return; }
-        var order_uuid = stdout.split(".")[0].split("/").reverse()[0];
-        var symlink_name = "";
-        if (Object.keys(symlinks).indexOf(hires_path) > -1) { symlink_name = symlinks[hires_path] }
-        var upload_status = null;
-        if (Object.keys(uploads).indexOf(hires_path) > -1) { upload_status = uploads[hires_path] }
-        orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path, order_uuid: order_uuid, name: symlink_name, loading: false, upload_status: upload_status })
-        if (orders[key].length == paths.length) {
-          machines[key]["outspool_last"] = orders[key].sort((a, b) => (a.order_id < b.order_id) ? 1 : -1);
-          io.emit("machines", machines)
-        }
+        var hires_path = stdout.split("\n")[0].split("/");
+        hires_path.pop();
+        hires_path = hires_path.join("/");
+        var order_path = hires_path.split("/");
+        order_path.pop();
+        order_path.pop();
+        order_path = order_path.join("/");
+        exec('ls '+hires_path+' | wc -l', (error, stdout, stderr) => {
+          if (error) { console.log(`error: ${error.message}`); return; }
+          if (stderr) { console.log(`stderr: ${stderr}`); return; }
+          var complete = (parseInt(stdout) >= frames_cnt);
+          exec("find "+order_path+"/Orders | grep -i jpg; exit 0", (error, stdout, stderr) => {
+            if (error) { console.log(`error: ${error.message}`); return; }
+            if (stderr) { console.log(`stderr: ${stderr}`); return; }
+            var order_uuid = stdout.split(".")[0].split("/").reverse()[0];
+            var symlink_name = "";
+            if (Object.keys(symlinks).indexOf(hires_path) > -1) { symlink_name = symlinks[hires_path] }
+            var upload_status = null;
+            if (Object.keys(uploads).indexOf(hires_path) > -1) { upload_status = uploads[hires_path] }
+            orders[key].push({ order_id: order_id, outspool_folder: kekpath, complete: complete, hires_path: hires_path, order_uuid: order_uuid, name: symlink_name, loading: false, upload_status: upload_status })
+            if (orders[key].length == paths.length) {
+              machines[key]["outspool_last"] = orders[key].sort((a, b) => (a.order_id < b.order_id) ? 1 : -1);
+              io.emit("machines", machines)
+            }
+          });
+        });
       });
     });
   });
