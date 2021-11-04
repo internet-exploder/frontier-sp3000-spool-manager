@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@forevolve/bootstrap-dark": "^1.2.0-g6c89781692",
+    "bootstrap-vue": "^2.21.2",
     "core-js": "^3.3.2",
     "socket.io-client": "^2.3.0",
     "strftime": "^0.10.0",

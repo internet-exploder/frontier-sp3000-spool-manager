@@ -43,7 +43,7 @@
                     <td class="text-left">
                       <div class="btn btn-success" v-on:click="editName(order)" v-if="!(order.loading || order.upload_status == 'inprogress')">✏️</div>
                       <div class="btn btn-secondary" v-if="order.loading || order.upload_status == 'inprogress'">🕘</div>
-                      <div class="btn btn-primary" v-bind:class="{ 'btn-primary': order.upload_status == null, 'btn-danger': order.upload_status == 'failed', 'btn-success': order.upload_status == 'complete' }" v-on:click="list_remote_folders(order)" v-if="!order.loading && order.name.length > 0 && order.upload_status != 'inprogress'">⬆️</div>
+                      <div class="btn btn-primary" v-bind:class="{ 'btn-primary': order.upload_status == null, 'btn-danger': order.upload_status == 'failed', 'btn-success': order.upload_status == 'complete' }" v-on:click="list_remote_folders(order)" v-b-modal="'select-folder-modal'" v-if="!order.loading && order.name.length > 0 && order.upload_status != 'inprogress'">⬆️</div>
                     </td>
                   </tr>
                 </tbody>
@@ -53,19 +53,46 @@
         </div>
       </div>
     </div>
+    <div>
+      <b-button v-b-modal="'select-folder-modal'">Select Folder</b-button>
+      <b-modal id="select-folder-modal">
+        <template #modal-header="{ close }">
+          Select Folder
+        </template>
+        Selected: {{ selected_folder }}
+        <br/><br/>
+        <b-form-group v-slot="{ ariaDescribedby }">
+          <b-form-radio v-model="selected_folder" :aria-describedby="ariaDescribedby" name="some-radios" v-bind:value="folder.href" v-for="(folder, ind) in remote_folders" :key="ind">{{ folder.displayName }}</b-form-radio>
+        </b-form-group>
+      </b-modal>
+    </div>
   </div>
 </template>
 
 <script>
 import io from "socket.io-client";
+import { BButton, BModal, VBModal, BFormRadio, BFormGroup } from "bootstrap-vue";
 var strftime = require('strftime')
 var Console = console;
 export default {
+  components: {
+    BButton,
+    BModal,
+    BFormRadio,
+    BFormGroup
+  },
+  directives: { 
+    'b-modal': VBModal,
+    'b-form-group': BFormGroup,
+    'b-form-radio': BFormRadio
+  },
   data() {
     return {
       socket: io("192.168.88.245:4001"),
       machines: {},
-      selected_order: null
+      selected_order: null,
+      remote_folders: [],
+      selected_folder: null
     };
   },
   methods: {
@@ -103,6 +130,7 @@ export default {
     })
     this.socket.on("remote_folders", data => {
       Console.log(data);
+      this.remote_folders = data;
     })
   }
 };

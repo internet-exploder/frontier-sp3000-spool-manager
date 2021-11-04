@@ -64,6 +64,7 @@ io.on('connection', socket => {
       if (err) {
         console.log(err); return;
       }
+      output.sort((a, b) => (Date(a.order_id) < Date(b.order_id)) ? 1 : -1);
       socket.emit("remote_folders", output);
     });
   })
