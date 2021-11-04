@@ -236,9 +236,9 @@ var get_status = function(key) {
 }
 
 var resolve_order = function(key, dirpath, paths) {
-  var kekpath = dirpath;
+  var kekpath = dirpath; // outspool path
+  var key = key;
   exec('grep Sort /mnt/'+key+'_outspool/'+kekpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
-    var dirpath = dirpath;
     if (error) { console.log(`error: ${error.message}`); return; }
     if (stderr) { console.log(`stderr: ${stderr}`); return; }
     var order_id = parseInt(stdout.split("\n")[0]);
@@ -260,10 +260,12 @@ var resolve_order = function(key, dirpath, paths) {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           var complete = (parseInt(stdout) >= frames_cnt);
-          exec("find "+order_path+"/Orders | grep -i jpg; exit 0", (error, stdout, stderr) => {
+
+
+          exec("xxd -p /mnt/"+key+"_photos/jobdata/"+hires_path.split("/")[3].split("_")[1]+".con | tr -d '\n' | awk -F 'ef0903000401' '{print \$2}' | awk -F '80' '{print \$2}' | awk -F '0009' '{print \$1}' | xxd -p -r | sed 's/\x00//g'", (error, stdout, stderr) => {
             if (error) { console.log(`error: ${error.message}`); return; }
             if (stderr) { console.log(`stderr: ${stderr}`); return; }
-            var order_uuid = stdout.split(".")[0].split("/").reverse()[0];
+            var order_uuid = stdout;
             var symlink_name = "";
             if (Object.keys(symlinks).indexOf(hires_path) > -1) { symlink_name = symlinks[hires_path] }
             var upload_status = null;
