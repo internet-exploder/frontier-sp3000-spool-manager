@@ -77,6 +77,7 @@ io.on('connection', socket => {
     if ((typeof(what_do["folder"]) == "undefined") || (what_do["folder"] == null)) {
       tgt_path = upload_order.name;
     }
+    console.log(tgt_path);
     disk.exists(tgt_path, function(err, exists) {
       if (err) {
         console.log(err);
