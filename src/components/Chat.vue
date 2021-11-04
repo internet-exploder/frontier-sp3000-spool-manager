@@ -55,13 +55,14 @@
     </div>
     <div>
       <b-button v-b-modal="'select-folder-modal'">Select Folder</b-button>
-      <b-modal id="select-folder-modal">
-        <template #modal-header="{ close }">
+      <b-modal id="select-folder-modal" @ok="upload(selected_order, selected_folder)">
+        <template #modal-header>
           Select Folder
         </template>
         Selected: {{ selected_folder }}
         <br/><br/>
         <b-form-group v-slot="{ ariaDescribedby }">
+          <b-form-radio v-model="selected_folder" :aria-describedby="ariaDescribedby" name="some-radios" value="/">/</b-form-radio>
           <b-form-radio v-model="selected_folder" :aria-describedby="ariaDescribedby" name="some-radios" v-bind:value="folder.href" v-for="(folder, ind) in remote_folders" :key="ind">{{ folder.displayName }}</b-form-radio>
         </b-form-group>
       </b-modal>
@@ -97,11 +98,12 @@ export default {
   },
   methods: {
     list_remote_folders(order) {
+      this.selected_folder = "/"
       this.selected_order = order;
       this.socket.emit("list_remote_folders", {});
     },
-    upload(order) {
-      this.socket.emit("upload", { hires_path: order.hires_path, name: order.name });
+    upload(order, folder) {
+      this.socket.emit("upload", { hires_path: order.hires_path, name: order.name, path: folder });
     },
     editName(order) {
       var input;
