@@ -237,12 +237,12 @@ var get_status = function(key) {
 
 var resolve_order = function(key, dirpath, paths) {
   var kekpath = dirpath;
-  exec('grep Sort /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
+  exec('grep Sort /mnt/'+key+'_outspool/'+kekpath+'/CdOrder.INF | cut -f 2 -d " "', (error, stdout, stderr) => {
     var dirpath = dirpath;
     if (error) { console.log(`error: ${error.message}`); return; }
     if (stderr) { console.log(`stderr: ${stderr}`); return; }
     var order_id = parseInt(stdout.split("\n")[0]);
-    exec('grep Frame /mnt/'+key+'_outspool/'+dirpath+'/CdOrder.INF | wc -l', (error, stdout, stderr) => {
+    exec('grep Frame /mnt/'+key+'_outspool/'+kekpath+'/CdOrder.INF | wc -l', (error, stdout, stderr) => {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
       var frames_cnt = parseInt(stdout);
