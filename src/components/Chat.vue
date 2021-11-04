@@ -63,7 +63,7 @@
         <br/><br/>
         <b-form-group v-slot="{ ariaDescribedby }">
           <b-form-radio v-model="selected_folder" :aria-describedby="ariaDescribedby" name="some-radios" value="/">/</b-form-radio>
-          <b-form-radio v-model="selected_folder" :aria-describedby="ariaDescribedby" name="some-radios" v-bind:value="folder.href" v-for="(folder, ind) in remote_folders" :key="ind">{{ folder.displayName }}</b-form-radio>
+          <b-form-radio v-model="selected_folder" :aria-describedby="ariaDescribedby" name="some-radios" v-bind:value="folder.displayName" v-for="(folder, ind) in remote_folders" :key="ind">{{ folder.displayName }}</b-form-radio>
         </b-form-group>
       </b-modal>
     </div>

@@ -73,7 +73,7 @@ io.on('connection', socket => {
     var upload_order = set_order_loading_by_path(what_do["hires_path"], true);
     io.emit("machines", machines)
     uploads[upload_order["hires_path"]] = "inprogress";
-    var tgt_path = what_do["path"]+upload_order.name;
+    var tgt_path = what_do["path"]+"/"+upload_order.name;
     if ((typeof(what_do["path"]) == "undefined") || (what_do["path"] == null)) {
       tgt_path = upload_order.name;
     }
