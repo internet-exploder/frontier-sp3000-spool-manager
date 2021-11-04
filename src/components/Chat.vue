@@ -38,7 +38,7 @@
                     <td>{{ order.order_uuid }}</td>
                     <td>{{ order.outspool_folder }}</td>
                     <td>{{ order.complete }}</td>
-                    <td>{{ order.hires_path }}</td>
+                    <td>{{ order.hires_path.split("/")[3] }}</td>
                     <td>{{ order.name }}</td>
                     <td class="text-left">
                       <div class="btn btn-success" v-on:click="editName(order)" v-if="!(order.loading || order.upload_status == 'inprogress')">✏️</div>

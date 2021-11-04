@@ -246,7 +246,7 @@ var resolve_order = function(key, dirpath, paths) {
       if (error) { console.log(`error: ${error.message}`); return; }
       if (stderr) { console.log(`stderr: ${stderr}`); return; }
       var frames_cnt = parseInt(stdout);
-      exec("find /mnt/"+key+"_photos/Job_*/Roll*/hires | grep -i jpg | sed 's/\(.*\)-.*/\1/' | grep "+order_id+"; exit 0", (error, stdout, stderr) => {
+      exec("find /mnt/"+key+"_photos/Job_*/Roll*/hires | egrep -i '.jpg|.tif' | sed 's/\(.*\)-.*/\1/' | grep "+order_id+"; exit 0", (error, stdout, stderr) => {
         if (error) { console.log(`error: ${error.message}`); return; }
         if (stderr) { console.log(`stderr: ${stderr}`); return; }
         var hires_path = stdout.split("\n")[0].split("/");
