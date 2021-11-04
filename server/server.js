@@ -256,13 +256,14 @@ var resolve_order = function(key, dirpath, paths) {
         order_path.pop();
         order_path.pop();
         order_path = order_path.join("/");
+        if (hires_path == "") { return; }
         exec('ls '+hires_path+' | wc -l', (error, stdout, stderr) => {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           var complete = (parseInt(stdout) >= frames_cnt);
 
 
-          exec("xxd -p /mnt/"+key+"_photos/jobdata/"+hires_path.split("/")[3].split("_")[1]+".con | tr -d '\n' | awk -F 'ef0903000401' '{print \$2}' | awk -F '80' '{print \$2}' | awk -F '0009' '{print \$1}' | xxd -p -r | sed 's/\x00//g'", (error, stdout, stderr) => {
+          exec("xxd -p /mnt/"+key+"_photos/jobdata/j"+hires_path.split("/")[3].split("_")[1]+'.con | tr -d "\\n" | awk -F \'ef0903000401\' \'{print $2}\' | awk -F \'80\' \'{print $2}\' | awk -F \'0009\' \'{print $1}\' | xxd -p -r | sed \'s/\\x00//g\'', (error, stdout, stderr) => {
             if (error) { console.log(`error: ${error.message}`); return; }
             if (stderr) { console.log(`stderr: ${stderr}`); return; }
             var order_uuid = stdout;
