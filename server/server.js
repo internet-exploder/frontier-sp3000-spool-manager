@@ -190,7 +190,7 @@ var get_status = function(key) {
       }
       // if Mounted collect orders
       if ((parseInt(stdout) > 0) && (machines[key]["photos_mounted"])) {
-        exec('ls /mnt/'+key+'_outspool | egrep -v "Device|ORDERINF|OrderPacks" | tail', (error, stdout, stderr) => {
+        exec('ls -tr /mnt/'+key+'_outspool | egrep -v "Device|ORDERINF|OrderPacks" | tail -n 20', (error, stdout, stderr) => {
           if (error) { console.log(`error: ${error.message}`); return; }
           if (stderr) { console.log(`stderr: ${stderr}`); return; }
           orders[key] = []
